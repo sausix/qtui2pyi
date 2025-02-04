@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Converts QtDesigner ui files into Python pyi files to support type annotations for IDEs and linters.
-Applies to keeping ui files as source instead of compiling them into py modules (uic, etc.).
+Created Python pyi files from QtDesigner ui files to support type annotations for IDEs and linters.
+Applies to keeping Qt ui files as source instead of compiling them into py modules (uic, etc.).
 """
 
 import os
@@ -19,14 +19,13 @@ from typing import Optional, Iterable, Generator
 from pathlib import Path
 from xml.dom.minidom import parse, Element, Document
 
+__version__ = "0.1.1"
+
 logging.basicConfig(
     level=os.environ.get("LOGLEVEL", "WARNING").upper()
 )
 
 logger = logging.getLogger(__name__)
-
-
-__version__ = "0.1.0"
 
 
 def print_help(as_error=False):
@@ -53,7 +52,7 @@ class SelectiveQtImporter:
     def __init__(self, qt_package_name: str, invalidate_cache=False):
         self._qt_package_name = qt_package_name  # PySide6
         self._qt_package_qtcore = importlib.import_module(qt_package_name + ".QtCore")
-        self._qt_version = self.detect_version(self._qt_package_qtcore)
+        self._qt_version = self.detect_qt_version(self._qt_package_qtcore)
 
         self.package_cache = self.CACHE_DIR / qt_package_name
         self.package_cache.mkdir(mode=0o755, exist_ok=True, parents=True)
@@ -67,7 +66,7 @@ class SelectiveQtImporter:
         self.cache: dict[str, list[str]] = self.read_cache()
 
     @staticmethod
-    def detect_version(p) -> str:
+    def detect_qt_version(p) -> str:
         """Detects the current Qt version of the selected package name."""
         if hasattr(p, "__version__"):
             return p.__version__
@@ -193,13 +192,13 @@ class UIDesingerFile:
     def subnodes(self, tagnames: Iterable[str]) -> Generator[Element, None, None]:
         """Interates over all given tagnames below the root element and returns all Elements."""
         for tagname in tagnames:
-            for el in self.ui_top_widget.getElementsByTagName(tagname):
+            for el in self.root_element.getElementsByTagName(tagname):
                 if isinstance(el, Element):
                     yield el
 
     def get_elements(self) -> dict[str, str]:
         """Creates a dictionary containing all widgets names and classes:
-        {"my_widget_name": "QWindgetClass"}"""
+        {"my_widget_name": "QWidgetClass"}"""
 
         result = {}
         for n in self.subnodes(["widget", "layout", "action"]):
