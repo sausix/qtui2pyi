@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """
-Created Python pyi files from QtDesigner ui files to support type annotations for IDEs and linters.
+Creates Python pyi stub files from QtDesigner ui files to add type annotations for IDEs and linters.
 Applies to keeping Qt ui files as source instead of compiling them into py modules (uic, etc.).
+
 """
 
 import os
@@ -13,6 +14,7 @@ import functools
 import importlib
 import json
 import re
+
 from datetime import datetime
 from io import TextIOWrapper
 from typing import Optional, Iterable, Generator
@@ -20,6 +22,9 @@ from pathlib import Path
 from xml.dom.minidom import parse, Element, Document
 
 __version__ = "0.1.1"
+__github__ = "https://github.com/sausix/qtui2pyi"
+__author__ = "sausix"
+
 
 logging.basicConfig(
     level=os.environ.get("LOGLEVEL", "WARNING").upper()

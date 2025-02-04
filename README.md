@@ -5,6 +5,8 @@ This tool creates Python pyi files from various Qt Designer ui files which
 hint IDEs and linters to correct types. This primarily allows IDEs to
 show you dropdowns and auto completion features.
 
+![Example of having code completion in PyCharm](example_annotated.png?raw=true)
+
 ## But there is uic / pyuic for that!
 In fact the onboard tools of PyQt and PySide allow compiling your ui
 files directly into Python modules. This is totally fine and that includes types and
@@ -30,7 +32,9 @@ be special. PySide and PyQt may have different handlings and classes like "pyqtP
 ## Usage example
 (python3) `qtui2pyi.py -p PySide6 sourcefile.ui -o sourcefile.pyi`
 
-Also see: `qtui2pyi -h`
+Also see: `qtui2pyi -h`  
+
+Example folders also feature some full applications to show usage.
 
 ## How does it work
 The ui files are simple xml files and being parsed by xml.dom.minidom.  
@@ -43,8 +47,8 @@ Time stamps of the original ui file are monitored and actual recreation of the p
 - 0.1.0 First release (alpha)
 
 ## TODO
-- Feedback as motivation
-- Testing, especially for PyQt having classname variations.
-- Add examples and my base classes to load ui files
+- Get feedback and love as motivation
+- Testing
+- Add Qt5/Qt2 examples
 - Add argparser (maybe)
 - Packaging and CLI entrypoints
