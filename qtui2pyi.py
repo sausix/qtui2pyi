@@ -4,7 +4,6 @@
 """
 Creates Python pyi stub files from QtDesigner ui files to add type annotations for IDEs and linters.
 Applies to keeping Qt ui files as source instead of compiling them into py modules (uic, etc.).
-
 """
 
 import os
@@ -36,7 +35,7 @@ logger = logging.getLogger(__name__)
 def print_help(as_error=False):
     """Prints command line help to STDOUT or STDERR."""
     pipe = sys.stderr if as_error else sys.stdout
-    pipe.write(f"""Usage: {sys.argv[0]} UI_SRCFILE [OPTIONS]
+    pipe.write(f"""{__doc__}\nUsage: {sys.argv[0]} UI_SRCFILE [OPTIONS]
 Creates a Python pyi file based on a Qt Designer ui file.
 OPTIONS:
     -p PACKAGE     Specifies Qt package name. Defaults to PySide6.
