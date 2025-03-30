@@ -20,7 +20,7 @@ from typing import Optional, Iterable, Generator
 from pathlib import Path
 from xml.dom.minidom import parse, Element, Document
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __github__ = "https://github.com/sausix/qtui2pyi"
 __author__ = "sausix"
 

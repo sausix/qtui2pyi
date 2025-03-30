@@ -43,6 +43,7 @@ Some meta information, import statements and the class body a written to the out
 Time stamps of the original ui file are monitored and actual recreation of the pyi depends on a newer file modification date.
 
 ## Version history
+- 0.1.2 The window class was in the memebers. Empty windows now get a "pass" to maintain syntax.
 - 0.1.1 Fix missing top level widget class import
 - 0.1.0 First release (alpha)
 
