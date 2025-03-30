@@ -200,12 +200,12 @@ class UIDesingerFile:
                 if isinstance(el, Element):
                     yield el
 
-    def get_elements(self) -> dict[str, str]:
-        """Creates a dictionary containing all widgets names and classes:
+    def get_name_type_mapping(self, elements: Iterable[Element]) -> dict[str, str]:
+        """Creates a dictionary containing all widgets names and types:
         {"my_widget_name": "QWidgetClass"}"""
 
         result = {}
-        for n in self.subnodes(["widget", "layout", "action"]):
+        for n in elements:
             w_name = n.getAttribute("name")
             if w_name in result:
                 raise NameError("Duplicate element name in file: " + w_name)
@@ -218,6 +218,19 @@ class UIDesingerFile:
             result[w_name] = w_class
 
         return result
+
+    def get_elements(self) -> Generator[Element, None, None]:
+        """Creates a list containing all relevant xml Elements:"""
+
+        names = set()
+
+        for n in self.subnodes(["widget", "layout", "action"]):
+            w_name = n.getAttribute("name")
+            if w_name in names:
+                raise NameError("Duplicate element name in file: " + w_name)
+            names.add(w_name)
+            yield n
+
 
     def check_outputfile_is_uptodate(self, dest_file: Path) -> bool:
         """Returns False if the destination file is missing
@@ -237,6 +250,11 @@ class UIDesingerFile:
         # No or invalid header found. Recreation needed.
         return False
 
+    def without_ui_top_widget(self, elements: Iterable[Element]) -> Generator[Element, None, None]:
+        for e in elements:
+            if e is not self.ui_top_widget:
+                yield e
+
     def write_pyi(self, star_imports=True):
         """Writes the pyi file"""
 
@@ -246,23 +264,31 @@ class UIDesingerFile:
 
         if self._output_fh:
             # Write to file. Filename known.
-            self._write(f"# Suitable for '{self._ouput_file.stem}.py':"
-                        f" Must contain the class {self.ui_top_widget_name}"
-                        f"({self.ui_top_widget_class})\n")
+            self._write(f"# Suitable for '{self._ouput_file.stem}.py':")
         else:
             # Write to STDOUT. Filename unknown.
-            self._write(f"# Pipe mode: pyi file should have the same stem name as the py file."
-                        f" Must contain the class {self.ui_top_widget_name}"
-                        f"({self.ui_top_widget_class})\n")
+            self._write(f"# Pipe mode: pyi file should have the same stem name as the py file.")
+
+        self._write(f" Must contain the class {self.ui_top_widget_name}"
+                    f"({self.ui_top_widget_class})\n")
 
         # Fetch all widgets and classes
-        result = self.get_elements()
+        all_elements = list(self.get_elements())
+        
+        # Create name and type mapping dict
+        import_dict = self.get_name_type_mapping(all_elements)
+        self.import_section(import_dict, star_imports)
 
-        self.import_section(result, star_imports)
+        elements_dict = self.get_name_type_mapping(self.without_ui_top_widget(all_elements))
 
         self._write(f"\nclass {self.ui_top_widget_name}({self.ui_top_widget_class}):\n")
-        for w_name, w_class in result.items():
-            self._write(f"{self.INDENT}{w_name}: {w_class}\n")
+        if elements_dict:
+            # At least one element
+            for w_name, w_class in elements_dict.items():
+                self._write(f"{self.INDENT}{w_name}: {w_class}\n")
+        else:
+            # No elements yet
+            self._write(f"{self.INDENT}pass\n")
 
         if self._output_fh is not None:
             self._output_fh.close()

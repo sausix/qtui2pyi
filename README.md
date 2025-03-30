@@ -15,7 +15,7 @@ auto completion without any pyi files.
 But some people still prefer using ui files as direct origin for GUI
 initialization for good reasons:
 - Ui files can be stored in Python resources and in Qt resource files or anywhere on a disk.
-- Changes in ui files are reflected direclty after restarting the program.
+- Changes in ui files are reflected directly after restarting the program.
 - Compile tools add special functions like setupUI or similar.
 - Ui files allow dynamic loading or nesting for example multiple ui files into pages of a single TabWidget or other nested widgets.
 
